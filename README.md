@@ -46,6 +46,8 @@ https://github.com/JoPe72
 
 https://github.com/jofme
 
+https://github.com/Dynamicspedia
+
 # Contact
 Feel free to reach out to d365fotoolkit@outlook.com for any questions or feature suggestions.
 
