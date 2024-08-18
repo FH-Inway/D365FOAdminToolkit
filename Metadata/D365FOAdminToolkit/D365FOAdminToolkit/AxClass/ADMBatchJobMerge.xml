@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMBatchJobMerge</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+/// <summary>
+/// Merge one or more batch jobs into an existing one
+/// </summary>
+internal final class ADMBatchJobMerge
+{
+    public  ADMTmpBatchJobMerge tmpBatchJobMerge;
+    public  RefRecId            mergeToBatchJob;
+    private Map                 taskMapping;
+    private RecordInsertList    recordInsertListConstraint;
+
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>initFromArgs</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes parameters from Args object
+    /// </summary>
+    /// <param name = "_args">Args object</param>
+    protected void initFromArgs(Args _args)
+    {
+        ADMTmpBatchJobMerge::createFromBatchJob(
+            tmpBatchJobMerge,
+            _args.record());
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>prompt</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Prompts user for parameters
+    /// </summary>
+    /// <returns>Boolean value indicating if dialog was closed OK or canceled</returns>
+    protected boolean prompt()
+    {
+        Args    args;
+        FormRun formRun;
+
+        args = new Args(formStr(ADMBatchJobMergeDialog));
+        args.parmObject(this);
+        
+        formRun = new FormRun(args);
+        formRun.init();
+        formRun.run();
+        formRun.wait();
+
+        return formRun.closedOk();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateParameters</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates parameters before batch jobs are merged
+    /// </summary>
+    /// <returns>Boolean value indicating if all parameters are valid or not</returns>
+    public boolean validateParameters()
+    {
+        boolean ret = true;
+
+        ret = ret && this.validateDestBatchJob(mergeToBatchJob);
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>validateDestBatchJob</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Validates that the destination batch job is valid
+    /// </summary>
+    /// <param name = "_destBatchId">RecId of the destination batch job</param>
+    /// <returns>Boolean value indicating that the destination batch job is valid or not</returns>
+    public boolean validateDestBatchJob(RefRecId _destBatchId)
+    {
+        boolean ret = true;
+
+        BatchJob batchJob;
+
+        select firstonly batchJob
+            where batchJob.RecId == _destBatchId;
+
+        if (!batchJob)
+        {
+            ret = checkFailed(strFmt("@D365FOAdminToolkit:MergeBatchJobDestNotExist", _destBatchId));
+        }
+        else
+        {
+            if (batchJob.Status != BatchStatus::Hold)
+            {
+                ret = checkFailed(strFmt("@D365FOAdminToolkit:MergeBatchJobDestWrongStatus", batchJob.caption));
+            }
+
+            if (ret)
+            {
+                select firstonly RecId from tmpBatchJobMerge
+                    where tmpBatchJobMerge.BatchJobRecId == _destBatchId;
+
+                if (tmpBatchJobMerge)
+                {
+                    ret = checkFailed("@D365FOAdminToolkit:MergeBatchJobDestIsSource");
+                }
+            }
+        }
+
+        return ret;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>doMergeBatchJobs</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Merges selected batch jobs
+    /// </summary>
+    protected void doMergeBatchJobs()
+    {        
+        BatchJob    destBatchJob;
+        BatchJob    origBatchJob;
+
+        try
+        {
+            select firstonly destBatchJob
+                where destBatchJob.RecId == mergeToBatchJob;
+
+            ttsbegin;
+
+            while select tmpBatchJobMerge
+                join origBatchJob
+                    where origBatchJob.RecId == tmpBatchJobMerge.BatchJobRecId
+            {
+                if (tmpBatchJobMerge.CanMerge)
+                {
+                    info(strFmt("@D365FOAdminToolkit:BatchJobMergeMerging",
+                        origBatchJob.caption,
+                        destBatchJob.caption));
+
+                    this.copyTasks(tmpBatchJobMerge.BatchJobRecId);
+                }
+                else
+                {
+                    warning(strFmt("@D365FOAdminToolkit:BatchJobMergeUnableToMerge",
+                        origBatchJob.caption,
+                        destBatchJob.caption));
+                }
+            }
+
+            recordInsertListConstraint.insertDatabase();
+
+            ttscommit;
+
+            info("@D365FOAdminToolkit:BatchJobMergeFinished");
+        }
+        catch
+        {
+            Error("@D365FOAdminToolkit:BatchJobMergeError");
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>copyTasks</Name>
+				<Source><![CDATA[
+    private void copyTasks(RefRecId _origBatchJob)
+    {        
+        Batch               originalTask;        
+        BatchConstraints    originalConstraint;
+
+        while select originalTask
+            where originalTask.BatchJobId == _origBatchJob
+        {
+            Batch newTask;
+
+            newTask.data(originalTask);
+
+            newTask.BatchJobId  = mergeToBatchJob;
+            newTask.Status      = BatchStatus::Hold;
+
+            newTask.doInsert();
+
+            taskMapping.insert(originalTask.RecId, newTask.RecId);
+        }
+
+        while select originalConstraint
+            exists join originalTask
+                where originalTask.RecId			== originalConstraint.BatchId
+                      && originalTask.BatchJobId	== _origBatchJob
+        {
+            if (!taskMapping.exists(originalConstraint.BatchId)
+                || !taskMapping.exists(originalConstraint.DependsOnBatchId))
+            {
+                throw error("@ApplicationFoundation:CopyBatchJobFailed");
+            }
+
+            RecId newBatchId            = taskMapping.lookup(originalConstraint.BatchId);
+            RecId newDependsOnBatchId   = taskMapping.lookup(originalConstraint.DependsOnBatchId);
+
+            BatchConstraints newConstraint;
+            newConstraint.data(originalConstraint);
+            newConstraint.BatchId           = newBatchId;
+            newConstraint.DependsOnBatchId  = newDependsOnBatchId;
+            
+            recordInsertListConstraint.add(newConstraint);
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>new</Name>
+				<Source><![CDATA[
+    protected void new()
+    {
+        taskMapping = new Map(Types::Int64, Types::Int64);
+        recordInsertListConstraint = new RecordInsertList(tableNum(BatchConstraints), true);
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>construct</Name>
+				<Source><![CDATA[
+    public static ADMBatchJobMerge construct()
+    {
+        return new ADMBatchJobMerge();
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>Main</Name>
+				<Source><![CDATA[
+    public static void Main(Args _args)
+    {
+        ADMBatchJobMerge batchJobMerge = ADMBatchJobMerge::construct();
+
+        batchJobMerge.initFromArgs(_args);
+
+        if (batchJobMerge.prompt() && batchJobMerge.validateParameters())
+        {
+            batchJobMerge.doMergeBatchJobs();
+        }
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>

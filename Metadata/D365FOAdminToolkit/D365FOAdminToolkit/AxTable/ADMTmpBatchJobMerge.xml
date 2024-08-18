@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxTable xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMTmpBatchJobMerge</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+public class ADMTmpBatchJobMerge extends common
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>createFromBatchJob</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes table from a BatchJob
+    /// If the BatchJob is a form datasource, it will iterate all selected records
+    /// </summary>
+    /// <param name = "_tmpBatchJobMerge">Temporary table to insert records into</param>
+    /// <param name = "_batchJob">Source BatchJob record</param>
+    public static void createFromBatchJob(
+        ADMTmpBatchJobMerge _tmpBatchJobMerge,
+        BatchJob _batchJob)
+    {
+        if (FormDataUtil::isFormDataSource(_batchJob))
+        {
+            MultiSelectionHelper multiSelectionHelper = MultiSelectionHelper::construct();
+            multiSelectionHelper.parmDatasource(FormDataUtil::getFormDataSource(_batchJob));
+            
+            BatchJob batchJob = multiSelectionHelper.getFirst();
+
+            while (batchJob)
+            {
+                _tmpBatchJobMerge.initFromBatchJob(batchJob);    
+                _tmpBatchJobMerge.insert();
+
+                batchJob = multiSelectionHelper.getNext();
+            }
+
+        }
+        else
+        {
+            _tmpBatchJobMerge.initFromBatchJob(_batchJob);
+            _tmpBatchJobMerge.insert();
+        }
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>initFromBatchJob</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes record from a BatchJob record
+    /// </summary>
+    /// <param name = "_batchJob">BatchJob record to initialize from</param>
+    public void initFromBatchJob(batchJob _batchJob)
+    {
+        this.BatchJobRecId = _batchJob.RecId;
+        this.Caption       = _batchJob.Caption;
+        this.BatchGroup    = _batchJob.BatchGroup;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>setCanMerge</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Initializes the CanMerge field, that determins if the batch job can be merged into an existing one
+    /// </summary>
+    private void setCanMerge()
+    {
+        BatchJob batchJob;
+
+        select firstonly batchJob
+            where batchJob.RecId == this.BatchJobRecId;
+
+        boolean canMergeBatchJob = batchJob.Status == BatchStatus::Hold;
+
+        this.CanMerge = canMergeBatchJob;
+    }
+
+]]></Source>
+			</Method>
+			<Method>
+				<Name>insert</Name>
+				<Source><![CDATA[
+    public void insert()
+    {        
+        this.setCanMerge();
+
+        super();
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+	<DeveloperDocumentation>@D365FOAdminToolkit:TmpBatchJobMergeDevDoc</DeveloperDocumentation>
+	<Label>@D365FOAdminToolkit:BatchJobMerge</Label>
+	<SubscriberAccessLevel>
+		<Read>Allow</Read>
+	</SubscriberAccessLevel>
+	<TableGroup>Transaction</TableGroup>
+	<TitleField1>Caption</TitleField1>
+	<TitleField2>BatchGroup</TitleField2>
+	<ClusteredIndex>BatchMergeIdx</ClusteredIndex>
+	<TableType>InMemory</TableType>
+	<DeleteActions />
+	<FieldGroups>
+		<AxTableFieldGroup>
+			<Name>AutoReport</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Caption</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BatchGroup</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CanMerge</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoLookup</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Caption</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BatchGroup</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CanMerge</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoIdentification</Name>
+			<AutoPopulate>Yes</AutoPopulate>
+			<Fields />
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoSummary</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Caption</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BatchGroup</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CanMerge</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>AutoBrowse</Name>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Caption</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BatchGroup</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CanMerge</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+		<AxTableFieldGroup>
+			<Name>Grid</Name>
+			<Label>@SYS26263</Label>
+			<Fields>
+				<AxTableFieldGroupField>
+					<DataField>Caption</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>BatchGroup</DataField>
+				</AxTableFieldGroupField>
+				<AxTableFieldGroupField>
+					<DataField>CanMerge</DataField>
+				</AxTableFieldGroupField>
+			</Fields>
+		</AxTableFieldGroup>
+	</FieldGroups>
+	<Fields>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>Caption</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<AssetClassification>Customer Content</AssetClassification>
+			<ExtendedDataType>BatchCaption</ExtendedDataType>
+			<Label>@SYS114518</Label>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldString">
+			<Name>BatchGroup</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>BatchGroupId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldInt64">
+			<Name>BatchJobRecId</Name>
+			<AllowEdit>No</AllowEdit>
+			<AllowEditOnCreate>No</AllowEditOnCreate>
+			<ExtendedDataType>RefRecId</ExtendedDataType>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+			<Mandatory>Yes</Mandatory>
+		</AxTableField>
+		<AxTableField xmlns=""
+			i:type="AxTableFieldEnum">
+			<Name>CanMerge</Name>
+			<ExtendedDataType>NoYesId</ExtendedDataType>
+			<HelpText>@D365FOAdminToolkit:BatchJobMergeCanMergeHelp</HelpText>
+			<IgnoreEDTRelation>Yes</IgnoreEDTRelation>
+			<Label>@D365FOAdminToolkit:BatchJobMergeCanMergeLabel</Label>
+			<EnumType>NoYes</EnumType>
+		</AxTableField>
+	</Fields>
+	<FullTextIndexes />
+	<Indexes>
+		<AxTableIndex>
+			<Name>BatchMergeIdx</Name>
+			<AlternateKey>Yes</AlternateKey>
+			<Fields>
+				<AxTableIndexField>
+					<DataField>BatchJobRecId</DataField>
+				</AxTableIndexField>
+			</Fields>
+		</AxTableIndex>
+	</Indexes>
+	<Mappings />
+	<Relations />
+	<StateMachines />
+</AxTable>
