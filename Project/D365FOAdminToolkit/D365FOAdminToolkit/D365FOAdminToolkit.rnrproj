@@ -63,6 +63,11 @@
       <Name>ADMApplicationInsightsSysAdminUserIdProperty</Name>
       <Link>Classes\ADMApplicationInsightsSysAdminUserIdProperty</Link>
     </Content>
+    <Content Include="AxClass\ADMBatchJobMerge">
+      <SubType>Content</SubType>
+      <Name>ADMBatchJobMerge</Name>
+      <Link>Classes\ADMBatchJobMerge</Link>
+    </Content>
     <Content Include="AxClass\ADMConfigsConstants">
       <SubType>Content</SubType>
       <Name>ADMConfigsConstants</Name>
@@ -218,6 +223,16 @@
       <Name>ADMSysAdminAction</Name>
       <Link>Base Enums\ADMSysAdminAction</Link>
     </Content>
+    <Content Include="AxFormExtension\BatchJob.D365FOAdminToolkit">
+      <SubType>Content</SubType>
+      <Name>BatchJob.D365FOAdminToolkit</Name>
+      <Link>Form Extensions\BatchJob.D365FOAdminToolkit</Link>
+    </Content>
+    <Content Include="AxFormExtension\BatchJobEnhanced.D365FOAdminToolkit">
+      <SubType>Content</SubType>
+      <Name>BatchJobEnhanced.D365FOAdminToolkit</Name>
+      <Link>Form Extensions\BatchJobEnhanced.D365FOAdminToolkit</Link>
+    </Content>
     <Content Include="AxFormExtension\SysGroupManagement.D365FOAdminToolkit">
       <SubType>Content</SubType>
       <Name>SysGroupManagement.D365FOAdminToolkit</Name>
@@ -237,6 +252,11 @@
       <SubType>Content</SubType>
       <Name>SysUserManagement.D365FOAdminToolkit</Name>
       <Link>Form Extensions\SysUserManagement.D365FOAdminToolkit</Link>
+    </Content>
+    <Content Include="AxForm\ADMBatchJobMergeDialog">
+      <SubType>Content</SubType>
+      <Name>ADMBatchJobMergeDialog</Name>
+      <Link>Forms\ADMBatchJobMergeDialog</Link>
     </Content>
     <Content Include="AxForm\ADMConfiguration">
       <SubType>Content</SubType>
@@ -353,6 +373,11 @@
       <Name>ADMRemoveUserAdminRoleEndDateTimeService</Name>
       <Link>Action Menu Items\ADMRemoveUserAdminRoleEndDateTimeService</Link>
     </Content>
+    <Content Include="AxMenuItemDisplay\ADMBatchJobMerge">
+      <SubType>Content</SubType>
+      <Name>ADMBatchJobMerge</Name>
+      <Link>Display Menu Items\ADMBatchJobMerge</Link>
+    </Content>
     <Content Include="AxMenuItemDisplay\ADMConfiguration">
       <SubType>Content</SubType>
       <Name>ADMConfiguration</Name>
@@ -403,6 +428,11 @@
       <Name>ADMEntraIdGroupUserMembershipQuery</Name>
       <Link>Simple Queries\ADMEntraIdGroupUserMembershipQuery</Link>
     </Content>
+    <Content Include="AxSecurityDutyExtension\BatchJobMaintain.D365FOAdminToolkit">
+      <SubType>Content</SubType>
+      <Name>BatchJobMaintain.D365FOAdminToolkit</Name>
+      <Link>Security Duty Extensions\BatchJobMaintain.D365FOAdminToolkit</Link>
+    </Content>
     <Content Include="AxSecurityDuty\ADMEnhancedEntraIdGroupIntegrationMaintain">
       <SubType>Content</SubType>
       <Name>ADMEnhancedEntraIdGroupIntegrationMaintain</Name>
@@ -412,6 +442,11 @@
       <SubType>Content</SubType>
       <Name>ADMEnhancedEntraIdGroupIntegrationView</Name>
       <Link>Security Duties\ADMEnhancedEntraIdGroupIntegrationView</Link>
+    </Content>
+    <Content Include="AxSecurityPrivilege\ADMBatchJobMergeMaintain">
+      <SubType>Content</SubType>
+      <Name>ADMBatchJobMergeMaintain</Name>
+      <Link>Security Privileges\ADMBatchJobMergeMaintain</Link>
     </Content>
     <Content Include="AxSecurityPrivilege\ADMEnhancedEntraIdGroupIntegrationMaintain">
       <SubType>Content</SubType>
@@ -503,6 +538,11 @@
       <Name>ADMSysAdminLog</Name>
       <Link>Tables\ADMSysAdminLog</Link>
     </Content>
+    <Content Include="AxTable\ADMTmpBatchJobMerge">
+      <SubType>Content</SubType>
+      <Name>ADMTmpBatchJobMerge</Name>
+      <Link>Tables\ADMTmpBatchJobMerge</Link>
+    </Content>
     <Content Include="AxTable\ADMUserDisableLog">
       <SubType>Content</SubType>
       <Name>ADMUserDisableLog</Name>
@@ -567,9 +607,11 @@
     <Folder Include="Label Files\" />
     <Folder Include="Menu Extensions\" />
     <Folder Include="Security Duties\" />
+    <Folder Include="Security Duty Extensions\" />
     <Folder Include="Security Privileges\" />
     <Folder Include="Security Roles\" />
     <Folder Include="Simple Queries\" />
+    <Folder Include="Table Extensions\" />
     <Folder Include="Tables\" />
     <Folder Include="Views\" />
   </ItemGroup>
