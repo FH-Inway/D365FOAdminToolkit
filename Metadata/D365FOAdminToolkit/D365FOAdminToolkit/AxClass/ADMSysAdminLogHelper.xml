@@ -99,15 +99,12 @@ public class ADMSysAdminLogHelper
         str             _name, 
         ADMSysAdminLog  _sysAdminLog)
     {
-        if(ADMSysAdminLogHelper::CheckTelemetrySysAdminRole())
-        {
-            SysApplicationInsightsTelemetryLogger::instance().trackEvent(
-                SysApplicationInsightsEventTelemetry::newFromEventIdName(_id, _name)
-                .addProperty(ADMApplicationInsightsSysAdminUserIdProperty::newFromValue(_sysAdminLog.UserId_))
-                .addProperty(ADMApplicationInsightsSysAdminReasonProperty::newFromValue(_sysAdminLog.Reason))
-                .addProperty(ADMApplicationInsightsSysAdminFromDateTimeProperty::newFromValue(DateTimeUtil::toStr(_sysAdminLog.CreatedDateTime)))
-                .addProperty(ADMApplicationInsightsSysAdminToDateTimeProperty::newFromValue(DateTimeUtil::toStr(_sysAdminLog.EndDateTime))));
-        }
+        SysApplicationInsightsTelemetryLogger::instance().trackEvent(
+            SysApplicationInsightsEventTelemetry::newFromEventIdName(_id, _name)
+            .addProperty(ADMApplicationInsightsSysAdminUserIdProperty::newFromValue(_sysAdminLog.UserId_))
+            .addProperty(ADMApplicationInsightsSysAdminReasonProperty::newFromValue(_sysAdminLog.Reason))
+            .addProperty(ADMApplicationInsightsSysAdminFromDateTimeProperty::newFromValue(DateTimeUtil::toStr(_sysAdminLog.CreatedDateTime)))
+            .addProperty(ADMApplicationInsightsSysAdminToDateTimeProperty::newFromValue(DateTimeUtil::toStr(_sysAdminLog.EndDateTime))));
     }
 
 ]]></Source>

@@ -36,10 +36,13 @@ internal final class ADMRemoveUserAdminRoleEndDateTimeService
                    && admSysAdminLog.EndDateTime < DateTimeUtil::getSystemDateTime()
                    && admSysAdminLog.HasExpired == NoYes::No
             {
-                ADMSysAdminLogHelper::sendTelemetryAssignedExpiredRevoked(
-                    ADMApplicationInsightsEventIds::SysAdminExpired,
-                    ADMApplicationInsightsConstants::ADMSysAdminExpired,
-                    admSysAdminLog);
+                if(ADMSysAdminLogHelper::CheckTelemetrySysAdminRole())
+                {
+                    ADMSysAdminLogHelper::sendTelemetryAssignedExpiredRevoked(
+                        ADMApplicationInsightsEventIds::SysAdminExpired,
+                        ADMApplicationInsightsConstants::ADMSysAdminExpired,
+                        admSysAdminLog);
+                }
 
                 if (!SysSecHelper::isServiceAccount(admSysAdminLog.UserId_))
                 {
