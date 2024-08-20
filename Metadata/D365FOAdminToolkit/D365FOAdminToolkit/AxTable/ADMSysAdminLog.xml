@@ -18,21 +18,24 @@ public class ADMSysAdminLog extends common
     {
         super();
 
-        switch (this.Action)
+        if(ADMSysAdminLogHelper::CheckTelemetrySysAdminRole())
         {
-            case ADMSysAdminAction::Assigned:
-                ADMSysAdminLogHelper::sendTelemetryAssignedExpiredRevoked(
-                    ADMApplicationInsightsEventIds::SysAdminAssigned,
-                    ADMApplicationInsightsConstants::ADMSysAdminAssigned,
-                    this);
-                break;
+            switch (this.Action)
+            {
+                case ADMSysAdminAction::Assigned:
+                    ADMSysAdminLogHelper::sendTelemetryAssignedExpiredRevoked(
+                        ADMApplicationInsightsEventIds::SysAdminAssigned,
+                        ADMApplicationInsightsConstants::ADMSysAdminAssigned,
+                        this);
+                    break;
 
-            case ADMSysAdminAction::Revoked:
-                ADMSysAdminLogHelper::sendTelemetryAssignedExpiredRevoked(
-                    ADMApplicationInsightsEventIds::SysAdminRevoked,
-                    ADMApplicationInsightsConstants::ADMSysAdminRevoked,
-                    this);
-                break;
+                case ADMSysAdminAction::Revoked:
+                    ADMSysAdminLogHelper::sendTelemetryAssignedExpiredRevoked(
+                        ADMApplicationInsightsEventIds::SysAdminRevoked,
+                        ADMApplicationInsightsConstants::ADMSysAdminRevoked,
+                        this);
+                    break;
+            }
         }
     }
 
