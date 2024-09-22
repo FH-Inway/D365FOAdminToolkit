@@ -49,11 +49,25 @@
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.0.0\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Metadata, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Metadata.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Dynamics.AX.Metadata.Core">
       <HintPath>..\..\..\..\..\AosService\WebRoot\bin\Microsoft.Dynamics.AX.Metadata.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Metadata.Modeling">
+      <HintPath>..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Metadata.Modeling.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Dynamics.AX.Security.Management">
       <HintPath>..\..\..\..\..\AosService\WebRoot\bin\Microsoft.Dynamics.AX.Security.Management.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Xpp.AxShared, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Xpp.AxShared.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Dynamics.AX.Xpp.Support">
+      <HintPath>..\..\..\..\AOSService\PackagesLocalDirectory\bin\Microsoft.Dynamics.AX.Xpp.Support.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Graph, Version=5.41.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Graph.5.41.0\lib\netstandard2.0\Microsoft.Graph.dll</HintPath>
@@ -194,6 +208,8 @@
   <ItemGroup>
     <Compile Include="AdminToolkitNET.cs" />
     <Compile Include="Models\CsvFile.cs" />
+    <Compile Include="Models\DataEntityDataSource.cs" />
+    <Compile Include="Models\DataEntityMetadata.cs" />
     <Compile Include="Models\RoleAccess.cs" />
     <Compile Include="Models\SecurityUserRoleAssociation.cs" />
     <Compile Include="Models\SecurityUserRoleOrganization.cs" />

@@ -8,6 +8,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.IO.Compression;
+using Microsoft.Dynamics.Ax.Xpp;
+using Microsoft.Dynamics.AX.Metadata.MetaModel;
 
 namespace D365FOAdminToolkitNET
 {
@@ -132,6 +134,56 @@ namespace D365FOAdminToolkitNET
                 };
                 files.Add(raFile);
 
+                //Data Entities
+                var dataEntityMetadata = GetDataEntityMetadata();
+                var dataEntityRootDataSources = GetDataEntityDataSource(false);
+                var dataEntityAllDataSources = GetDataEntityDataSource(true);
+
+                using(MemoryStream dataEntityMetadataStream = new MemoryStream())
+                {
+                    var sw = new StreamWriter(dataEntityMetadataStream);
+                    using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
+                        csv.WriteRecords(dataEntityMetadata);
+
+                    CsvFile file = new CsvFile()
+                    {
+                        Name = "DataEntityMetadata.csv",
+                        Contents = dataEntityMetadataStream
+                    };
+
+                    files.Add(file);
+                }
+
+                using(MemoryStream dataEntityRootDataSourcesStream = new MemoryStream())
+                {
+                    var sw = new StreamWriter(dataEntityRootDataSourcesStream);
+                    using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
+                        csv.WriteRecords(dataEntityRootDataSources);
+
+                    CsvFile file = new CsvFile()
+                    {
+                        Name = "DataEntityRootDataSources.csv",
+                        Contents = dataEntityRootDataSourcesStream
+                    };
+
+                    files.Add(file);
+                }
+
+                using (MemoryStream dataEntityAllDataSourcesStream = new MemoryStream())
+                {
+                    var sw = new StreamWriter(dataEntityAllDataSourcesStream);
+                    using (var csv = new CsvWriter(sw, CultureInfo.InvariantCulture))
+                        csv.WriteRecords(dataEntityAllDataSources);
+
+                    CsvFile file = new CsvFile()
+                    {
+                        Name = "DataEntityAllDataSources.csv",
+                        Contents = dataEntityAllDataSourcesStream
+                    };
+
+                    files.Add(file);
+                }
+
                 //Write files to zip
                 using (var zipArchive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
                 {
@@ -186,6 +238,73 @@ namespace D365FOAdminToolkitNET
                 userRoleOrgList.Add(uro);
             }
             return userRoleOrgList;
+        }
+
+        private static List<DataEntityMetadata> GetDataEntityMetadata()
+        {
+            List<DataEntityMetadata> dataEntityList = new List<DataEntityMetadata>();
+            var des = MetadataSupport.GetDataEntityViewNames();
+            foreach (var de in des)
+            {
+                AxDataEntity dataEntity = MetadataSupport.GetDataEntity(de);
+                AxDataEntityViewBase dataEntityViewBase = (AxDataEntityViewBase)dataEntity;
+                DataEntityMetadata dem = new DataEntityMetadata()
+                {
+                    Name = dataEntity.Name,
+                    Label = LabelHelper.GetLabel(dataEntity.Label),
+                    PublicCollectionName = dataEntityViewBase.PublicCollectionName,
+                    PublicEntityName = dataEntityViewBase.PublicEntityName
+                };
+                dataEntityList.Add(dem);
+            }
+
+            return dataEntityList;
+        }
+
+        private static List<DataEntityDataSource> GetDataEntityDataSource(bool includeNestedDataSources) 
+        {
+            List<DataEntityDataSource> dataEntityList = new List<DataEntityDataSource>();
+            var des = MetadataSupport.GetDataEntityViewNames();
+            foreach (var de in des)
+            {
+                AxDataEntity dataEntity = MetadataSupport.GetDataEntity(de);
+                AxDataEntityViewBase dataEntityViewBase = (AxDataEntityViewBase)dataEntity;
+                AxDataEntityView dataEntityView = MetadataSupport.GetDataEntityView(de);
+                AxQuerySimple query = dataEntityView.ViewMetadata;
+                var dataSources = query.DataSources;
+
+                List<string> dataSourceList = new List<string>();
+
+                foreach (var dataSource in dataSources)
+                {
+                    AddDataSources(dataSource, dataSourceList, includeNestedDataSources);
+                }
+
+                foreach (var dataSource in dataSourceList)
+                {
+
+                    DataEntityDataSource dedd = new DataEntityDataSource()
+                    {
+                        DataEntityName = dataEntity.Name,
+                        DataEntityLabel = LabelHelper.GetLabel(dataEntity.Label),
+                        DataSourceName = dataSource
+                    };
+
+                    dataEntityList.Add(dedd);
+                }
+            }
+
+            return dataEntityList;
+        }
+
+        private static void AddDataSources(AxQuerySimpleDataSource ds, List<string> dataSourceList, bool includeNestedDataSources)
+        {
+            dataSourceList.Add(ds.Name);
+            if (includeNestedDataSources)
+            {
+                foreach (var dataSource in ds.DataSources)
+                    AddDataSources(dataSource, dataSourceList, true);
+            }
         }
 
     }
