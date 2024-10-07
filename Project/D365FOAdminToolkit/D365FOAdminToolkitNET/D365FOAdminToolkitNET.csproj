@@ -221,4 +221,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y /c "$(TargetDir)*.dll" "$(ServiceDrive)\AosService\PackagesLocalDirectory\D365FOAdminToolkit\bin"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
