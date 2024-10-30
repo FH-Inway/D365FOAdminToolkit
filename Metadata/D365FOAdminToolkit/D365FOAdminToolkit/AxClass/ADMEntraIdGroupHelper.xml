@@ -146,12 +146,23 @@ internal final class ADMEntraIdGroupHelper
                 securityRoleAssignmentRule.RuleQuery = query.pack();
                 securityRoleAssignmentRule.ValidFrom = DateTimeUtil::utcNow();
                 securityRoleAssignmentRule.ValidTo = DateTimeUtil::maxValue();
-                securityRoleAssignmentRule.insert();
+                if (securityRoleAssignmentRule.validateWrite())
+                {
+                    securityRoleAssignmentRule.insert();
+                }
+                else
+                {
+                    ttsabort;
+                    return;
+                }
 
                 entraIdGroupSecRoleAssignmentRule.SecurityRole = _secUserRole.SecurityRole;
                 entraIdGroupSecRoleAssignmentRule.UserInfo = _userInfo.RecId;
                 entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule = securityRoleAssignmentRule.RecId;
-                entraIdGroupSecRoleAssignmentRule.insert();
+                if (entraIdGroupSecRoleAssignmentRule.validateWrite())
+                {
+                    entraIdGroupSecRoleAssignmentRule.insert();
+                }
 
                 ttscommit;
 
