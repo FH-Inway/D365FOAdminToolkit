@@ -225,7 +225,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup Condition="Exists('$(ServiceDrive)\AosService\PackagesLocalDirectory\D365FOAdminToolkit\bin')">
-    <PostBuildEvent>xcopy /y /c "$(TargetDir)*.dll" "$(ServiceDrive)\AosService\PackagesLocalDirectory\D365FOAdminToolkit\bin"</PostBuildEvent>
+  <PropertyGroup>
+    <PostBuildEvent>
+      if exist "$(ServiceDrive)\AosService\PackagesLocalDirectory\D365FOAdminToolkit\bin" (
+        xcopy /y /c "$(TargetDir)*.dll" "$(ServiceDrive)\AosService\PackagesLocalDirectory\D365FOAdminToolkit\bin"
+      )
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
