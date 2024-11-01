@@ -147,9 +147,12 @@ public class ADMEntraIdGroupSecurityRoleAssignmentRule extends common
 			i:type="AxTableRelationForeignKey">
 			<Name>SecurityRoleAssignmentRule</Name>
 			<Cardinality>ZeroOne</Cardinality>
+			<CreateNavigationPropertyMethods>Yes</CreateNavigationPropertyMethods>
 			<RelatedTable>SecurityRoleAssignmentRule</RelatedTable>
 			<RelatedTableCardinality>ZeroOne</RelatedTableCardinality>
+			<RelatedTableRole>SecurityRoleAssignmentRule</RelatedTableRole>
 			<RelationshipType>Association</RelationshipType>
+			<Role>ADMEntraIdGroupSecurityRoleAssignmentRule_SecurityRoleAssignmentRule</Role>
 			<Constraints>
 				<AxTableRelationConstraint xmlns=""
 					i:type="AxTableRelationConstraintField">

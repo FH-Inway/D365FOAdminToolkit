@@ -138,7 +138,7 @@ internal final class ADMEntraIdGroupHelper
 
             if (!entraIdGroupSecRoleAssignmentRule.RecId)
             {
-                ttsbegin;
+                UnitofWork unitOfWork = new UnitofWork();
         
                 securityRoleAssignmentRule.MembershipRuleName = _userInfo.id;
                 securityRoleAssignmentRule.MembershipRuleDescription = _userInfo.name;
@@ -146,25 +146,16 @@ internal final class ADMEntraIdGroupHelper
                 securityRoleAssignmentRule.RuleQuery = query.pack();
                 securityRoleAssignmentRule.ValidFrom = DateTimeUtil::utcNow();
                 securityRoleAssignmentRule.ValidTo = DateTimeUtil::maxValue();
-                if (securityRoleAssignmentRule.validateWrite())
-                {
-                    securityRoleAssignmentRule.insert();
-                }
-                else
-                {
-                    ttsabort;
-                    return;
-                }
+
+                unitOfWork.insertonSaveChanges(securityRoleAssignmentRule);
 
                 entraIdGroupSecRoleAssignmentRule.SecurityRole = _secUserRole.SecurityRole;
                 entraIdGroupSecRoleAssignmentRule.UserInfo = _userInfo.RecId;
-                entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule = securityRoleAssignmentRule.RecId;
-                if (entraIdGroupSecRoleAssignmentRule.validateWrite())
-                {
-                    entraIdGroupSecRoleAssignmentRule.insert();
-                }
+                entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule(securityRoleAssignmentRule);
 
-                ttscommit;
+                unitOfWork.insertonSaveChanges(entraIdGroupSecRoleAssignmentRule);
+
+                unitOfWork.saveChanges();
 
                 SysSecurityDynamicRoleAssignment::synchronize(_secUserRole.SecurityRole);
             }
