@@ -81,12 +81,13 @@ jobs:
           packagesDirectory: '${{ github.workspace }}/Project/D365FOAdminToolkit/packages'
 
       - name: List FSC packages
+        if: runner.debug == '1'
         run: ls -R Project/D365FOAdminToolkit/packages
 
       # find and show content of any packages.config files
       - name: Find and show packages.config
         run: |
-          Get-ChildItem -Path . -Filter 'packages.config' -Recurse | ForEach-Object { 
+          Get-ChildItem -Path / -Filter 'packages.config' -Recurse | ForEach-Object { 
             Write-Host "***Showing content of: $($_.FullName)***"; 
             Get-Content $_.FullName 
           }
@@ -94,7 +95,7 @@ jobs:
       # find and show content of any nuget.config files
       - name: Find and show NuGet.config files
         run: |
-          Get-ChildItem -Path . -Filter 'nuget.config' -Recurse | ForEach-Object { 
+          Get-ChildItem -Path / -Filter 'nuget.config' -Recurse | ForEach-Object { 
             Write-Host "***Showing content of: $($_.FullName)***"; 
             Get-Content $_.FullName 
           }
