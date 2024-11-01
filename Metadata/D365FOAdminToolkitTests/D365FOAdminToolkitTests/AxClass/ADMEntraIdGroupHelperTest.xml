@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AxClass xmlns:i="http://www.w3.org/2001/XMLSchema-instance">
+	<Name>ADMEntraIdGroupHelperTest</Name>
+	<SourceCode>
+		<Declaration><![CDATA[
+[SysTestTarget(classStr(ADMEntraIdGroupHelper))]
+public class ADMEntraIdGroupHelperTest extends SysTestCase
+{
+}
+]]></Declaration>
+		<Methods>
+			<Method>
+				<Name>createRoleAssignmentRule_RuleExists_NoError</Name>
+				<Source><![CDATA[
+    /// <summary>
+    /// Ensures that no additional role assignment rule is created if the rule already exists.
+    /// </summary>
+    [SysTestMethod]
+    public void createRoleAssignmentRule_RuleExists_NoError()
+    {
+        // Arrange
+        // create arguments
+        SecurityUserRole securityUserRole;
+        securityUserRole.SecurityRole = 4711;
+        securityUserRole.AssignmentStatus = RoleAssignmentStatus::Enabled;
+
+        UserInfo userInfo;
+        userInfo.RecId = 4711;
+        UserInfo.id = 'User';
+        UserInfo.name = 'User';
+
+        ADMEntraIdGroupDynamicRoleAssignment entraIdGroupDynamicRoleAssignment;
+        entraIdGroupDynamicRoleAssignment.UserInfo = userInfo.RecId;
+        entraIdGroupDynamicRoleAssignment.AutomaticRoleAssignment = NoYes::Yes;
+        entraIdGroupDynamicRoleAssignment.doInsert();
+
+        // create existing rule
+        ADMEntraIdGroupSecurityRoleAssignmentRule entraIdGroupSecRoleAssignmentRule;
+        entraIdGroupSecRoleAssignmentRule.UserInfo = UserInfo.RecId;
+        entraIdGroupSecRoleAssignmentRule.SecurityRole = securityUserRole.SecurityRole;
+        entraIdGroupSecRoleAssignmentRule.doInsert();
+
+        // Act
+        ADMEntraIdGroupHelper::createRoleAssignmentRule(securityUserRole, userInfo);
+
+        // Assert
+        this.assertTrue(true, 'No error should be thrown');
+    }
+
+]]></Source>
+			</Method>
+		</Methods>
+	</SourceCode>
+</AxClass>
