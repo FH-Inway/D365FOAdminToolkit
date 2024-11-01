@@ -1,5 +1,11 @@
 on:
   pull_request:
+  # every day at half past 3 am
+  schedule:
+    - cron: '30 3 * * *'
+  push:
+    branches:
+      - dev
   workflow_dispatch:
    inputs:
       version:
