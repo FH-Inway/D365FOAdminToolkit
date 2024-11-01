@@ -80,6 +80,25 @@ jobs:
           version: ${{ matrix.version }}
           packagesDirectory: '${{ github.workspace }}/Project/D365FOAdminToolkit/packages'
 
+      - name: List FSC packages
+        run: ls -R Project/D365FOAdminToolkit/packages
+
+      # find and show content of any packages.config files
+      - name: Find and show packages.config
+        run: |
+          Get-ChildItem -Path . -Filter 'packages.config' -Recurse | ForEach-Object { 
+            Write-Host "***Showing content of: $($_.FullName)***"; 
+            Get-Content $_.FullName 
+          }
+
+      # find and show content of any nuget.config files
+      - name: Find and show NuGet.config files
+        run: |
+          Get-ChildItem -Path . -Filter 'nuget.config' -Recurse | ForEach-Object { 
+            Write-Host "***Showing content of: $($_.FullName)***"; 
+            Get-Content $_.FullName 
+          }
+
       - name: Restore NuGet packages
         run: nuget restore Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj -PackagesDirectory Project/D365FOAdminToolkit/packages
 
