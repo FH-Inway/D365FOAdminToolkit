@@ -13,7 +13,11 @@ param (
 )
 
 
+Copy-Item -Path "$PackagesLocalDirectoryPath\bin\Microsoft.Dynamics.AX.Metadata.dll" -Destination "$RepoBasePath\Project\D365FOAdminToolkit\packages\DynamicsTemp"
 Copy-Item -Path "$PackagesLocalDirectoryPath\bin\Microsoft.Dynamics.AX.Metadata.Core.dll" -Destination "$RepoBasePath\Project\D365FOAdminToolkit\packages\DynamicsTemp"
+Copy-Item -Path "$PackagesLocalDirectoryPath\bin\Microsoft.Dynamics.AX.Metadata.Modeling.dll" -Destination "$RepoBasePath\Project\D365FOAdminToolkit\packages\DynamicsTemp"
+Copy-Item -Path "$PackagesLocalDirectoryPath\bin\Microsoft.Dynamics.AX.Xpp.AxShared.dll" -Destination "$RepoBasePath\Project\D365FOAdminToolkit\packages\DynamicsTemp"
+Copy-Item -Path "$PackagesLocalDirectoryPath\bin\Microsoft.Dynamics.AX.Xpp.Support.dll" -Destination "$RepoBasePath\Project\D365FOAdminToolkit\packages\DynamicsTemp"
 Copy-Item -Path "$PackagesLocalDirectoryPath\bin\Microsoft.Dynamics.AX.Security.Management.dll" -Destination "$RepoBasePath\Project\D365FOAdminToolkit\packages\DynamicsTemp"
 
 ###########################################

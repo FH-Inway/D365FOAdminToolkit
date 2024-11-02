@@ -1,5 +1,11 @@
 on:
   pull_request:
+  # every day at half past 3 am
+  schedule:
+    - cron: '30 3 * * *'
+  push:
+    branches:
+      - dev
   workflow_dispatch:
    inputs:
       version:
@@ -74,8 +80,32 @@ jobs:
           version: ${{ matrix.version }}
           packagesDirectory: '${{ github.workspace }}/Project/D365FOAdminToolkit/packages'
 
+      - name: List FSC packages (debug)
+        if: runner.debug == '1'
+        run: ls -R Project/D365FOAdminToolkit/packages
+
+      - name: Find and show packages.config (debug)
+        if: runner.debug == '1'
+        run: |
+          Get-ChildItem -Path / -Filter 'packages.config' -Recurse | ForEach-Object { 
+            Write-Host "***Showing content of: $($_.FullName)***"; 
+            Get-Content $_.FullName 
+          }
+
+      - name: Find and show NuGet.config files (debug)
+        if: runner.debug == '1'
+        run: |
+          Get-ChildItem -Path / -Filter 'nuget.config' -Recurse | ForEach-Object { 
+            Write-Host "***Showing content of: $($_.FullName)***"; 
+            Get-Content $_.FullName 
+          }
+
       - name: Restore NuGet packages
         run: nuget restore Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj -PackagesDirectory Project/D365FOAdminToolkit/packages
+
+      - name: List packages (debug)
+        if: runner.debug == '1'
+        run: ls -R Project/D365FOAdminToolkit/packages
 
       - name: Build
         run: msbuild Project/D365FOAdminToolkit/D365FOAdminToolkitNET/D365FOAdminToolkitNET.csproj /p:VersionSuffix=pr /p:Configuration=Release /p:Version=0.0.0.${{ github.event.pull_request.number }} /p:InformationalVersion=0.0.0.${{ github.event.pull_request.number }}-pr -fileLogger
