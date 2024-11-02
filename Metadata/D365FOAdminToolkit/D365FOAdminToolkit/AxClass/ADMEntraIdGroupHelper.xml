@@ -131,25 +131,34 @@ internal final class ADMEntraIdGroupHelper
 
             qbds.findRange(fieldNum(ADMEntraIdGroupUserMembership,EntraIdGroup)).value(queryValue(_userInfo.id));
 
-            ttsbegin;
-    
-            securityRoleAssignmentRule.MembershipRuleName = _userInfo.id;
-            securityRoleAssignmentRule.MembershipRuleDescription = _userInfo.name;
-            securityRoleAssignmentRule.SecurityRole = _secUserRole.SecurityRole;
-            securityRoleAssignmentRule.RuleQuery = query.pack();
-            securityRoleAssignmentRule.ValidFrom = DateTimeUtil::utcNow();
-            securityRoleAssignmentRule.ValidTo = DateTimeUtil::maxValue();
-            securityRoleAssignmentRule.insert();
+            // Check for existing record to prevent duplicates
+            select firstonly RecId from entraIdGroupSecRoleAssignmentRule
+                where entraIdGroupSecRoleAssignmentRule.SecurityRole == _secUserRole.SecurityRole
+                   && entraIdGroupSecRoleAssignmentRule.UserInfo == _userInfo.RecId;
 
-            entraIdGroupSecRoleAssignmentRule.SecurityRole = _secUserRole.SecurityRole;
-            entraIdGroupSecRoleAssignmentRule.UserInfo = _userInfo.RecId;
-            entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule = securityRoleAssignmentRule.RecId;
-            entraIdGroupSecRoleAssignmentRule.insert();
+            if (!entraIdGroupSecRoleAssignmentRule.RecId)
+            {
+                UnitofWork unitOfWork = new UnitofWork();
+        
+                securityRoleAssignmentRule.MembershipRuleName = _userInfo.id;
+                securityRoleAssignmentRule.MembershipRuleDescription = _userInfo.name;
+                securityRoleAssignmentRule.SecurityRole = _secUserRole.SecurityRole;
+                securityRoleAssignmentRule.RuleQuery = query.pack();
+                securityRoleAssignmentRule.ValidFrom = DateTimeUtil::utcNow();
+                securityRoleAssignmentRule.ValidTo = DateTimeUtil::maxValue();
 
-            ttscommit;
+                unitOfWork.insertonSaveChanges(securityRoleAssignmentRule);
 
-            SysSecurityDynamicRoleAssignment::synchronize(_secUserRole.SecurityRole);
+                entraIdGroupSecRoleAssignmentRule.SecurityRole = _secUserRole.SecurityRole;
+                entraIdGroupSecRoleAssignmentRule.UserInfo = _userInfo.RecId;
+                entraIdGroupSecRoleAssignmentRule.SecurityRoleAssignmentRule(securityRoleAssignmentRule);
 
+                unitOfWork.insertonSaveChanges(entraIdGroupSecRoleAssignmentRule);
+
+                unitOfWork.saveChanges();
+
+                SysSecurityDynamicRoleAssignment::synchronize(_secUserRole.SecurityRole);
+            }
         }
     }
 
